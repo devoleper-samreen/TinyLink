@@ -1,0 +1,23 @@
+// Prisma schema for TinyLink - URL Shortener Application
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Link model - Stores shortened URL mappings and analytics
+model Link {
+  id          String    @id @default(cuid())
+  code        String    @unique // Short code (6-8 alphanumeric characters)
+  targetUrl   String    // Original long URL
+  clicks      Int       @default(0) // Total number of clicks/redirects
+  lastClicked DateTime? // Timestamp of most recent click
+  createdAt   DateTime  @default(now()) // When the link was created
+  updatedAt   DateTime  @updatedAt // Auto-updated on any change
+
+  @@index([code]) // Index for fast lookups by short code
+}
