@@ -171,7 +171,7 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap cursor-pointer"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap cursor-pointer w-full sm:w-auto"
           >
             <Plus className="w-5 h-5" />
             Add Link
@@ -200,102 +200,195 @@ export default function Dashboard() {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-10">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Short URL
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Target URL
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Clicks
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Clicked
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stats
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredLinks.map((link) => (
-                    <tr key={link.code} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <a
-                            href={`/${link.code}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            {link.code}
-                          </a>
-                          <button
-                            onClick={() => copyToClipboard(link.code)}
-                            className="p-1 hover:bg-gray-200 rounded transition-colors cursor-pointer"
-                            title="Copy short URL"
-                          >
-                            {copiedCode === link.code ? (
-                              <Check className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-gray-400" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 max-w-md">
-                          <span className="text-sm text-gray-900 truncate" title={link.targetUrl}>
-                            {link.targetUrl}
-                          </span>
-                          <a
-                            href={link.targetUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-shrink-0"
-                          >
-                            <ExternalLink className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                          </a>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {link.clicks}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {link.lastClicked
-                          ? new Date(link.lastClicked).toLocaleString()
-                          : 'Never'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <Link
-                          href={`/code/${link.code}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                        >
-                          <BarChart3 className="w-4 h-4" />
-                          View
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <button
-                          onClick={() => handleDeleteClick(link.code, link.targetUrl)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Delete
-                        </button>
-                      </td>
+          <div className="mt-10">
+            {/* Desktop Table */}
+            <div className="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Short URL
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Target URL
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Clicks
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Last Clicked
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stats
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredLinks.map((link) => (
+                      <tr key={link.code} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={`/${link.code}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              {link.code}
+                            </a>
+                            <button
+                              onClick={() => copyToClipboard(link.code)}
+                              className="p-1 hover:bg-gray-200 rounded transition-colors cursor-pointer"
+                              title="Copy short URL"
+                            >
+                              {copiedCode === link.code ? (
+                                <Check className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-gray-400" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 max-w-md">
+                            <span className="text-sm text-gray-900 truncate" title={link.targetUrl}>
+                              {link.targetUrl}
+                            </span>
+                            <a
+                              href={link.targetUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-shrink-0"
+                            >
+                              <ExternalLink className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                            </a>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {link.clicks}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {link.lastClicked
+                            ? new Date(link.lastClicked).toLocaleString()
+                            : 'Never'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <Link
+                            href={`/code/${link.code}`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <BarChart3 className="w-4 h-4" />
+                            View
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <button
+                            onClick={() => handleDeleteClick(link.code, link.targetUrl)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+              {filteredLinks.map((link) => (
+                <div key={link.code} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                  {/* Short URL Section */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-gray-500 uppercase">Short URL</span>
+                      <button
+                        onClick={() => copyToClipboard(link.code)}
+                        className="p-1.5 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+                        title="Copy short URL"
+                      >
+                        {copiedCode === link.code ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <Copy className="w-4 h-4 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
+                    <a
+                      href={`/${link.code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-blue-600 hover:text-blue-800 font-semibold text-base"
+                    >
+                      {link.code}
+                    </a>
+                  </div>
+
+                  {/* Target URL */}
+                  <div className="mb-3 pb-3 border-b border-gray-200">
+                    <p className="text-xs font-medium text-gray-500 uppercase mb-1.5">Target URL</p>
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm text-gray-900 break-all flex-1 leading-tight" title={link.targetUrl}>
+                        {link.targetUrl}
+                      </span>
+                      <a
+                        href={link.targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 mt-0.5 cursor-pointer"
+                      >
+                        <ExternalLink className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-gray-50 rounded-lg p-2.5">
+                      <p className="text-xs font-medium text-gray-500 mb-1">Clicks</p>
+                      <p className="text-lg font-bold text-gray-900">{link.clicks}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-2.5">
+                      <p className="text-xs font-medium text-gray-500 mb-1">Last Clicked</p>
+                      <p className="text-xs text-gray-900 font-medium">
+                        {link.lastClicked
+                          ? new Date(link.lastClicked).toLocaleString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : 'Never'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/code/${link.code}`}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer font-semibold"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      Stats
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteClick(link.code, link.targetUrl)}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer font-semibold"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -303,17 +396,17 @@ export default function Dashboard() {
 
       {/* Add Link Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/30  flex items-center justify-center p-4 z-50" onClick={() => {
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50" onClick={() => {
           setShowAddModal(false);
           setError('');
           setTargetUrl('');
           setCustomCode('');
         }}>
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Link</h2>
-            <form onSubmit={handleAddLink} className="space-y-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Add New Link</h2>
+            <form onSubmit={handleAddLink} className="space-y-3 sm:space-y-4">
               <div>
-                <label htmlFor="targetUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="targetUrl" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Target URL *
                 </label>
                 <input
@@ -323,12 +416,12 @@ export default function Dashboard() {
                   onChange={(e) => setTargetUrl(e.target.value)}
                   placeholder="https://your-long-url"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label htmlFor="customCode" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="customCode" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Custom Code (optional)
                 </label>
                 <input
@@ -339,18 +432,18 @@ export default function Dashboard() {
                   placeholder="e.g., docs, mylink"
                   pattern="[A-Za-z0-9]{6,8}"
                   title="6-8 characters, alphanumeric only"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-mono"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-mono"
                 />
                 <p className="mt-1 text-xs text-gray-500">6-8 characters, alphanumeric only</p>
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+                <div className="p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg text-xs sm:text-sm text-red-800">
                   {error}
                 </div>
               )}
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -359,7 +452,7 @@ export default function Dashboard() {
                     setTargetUrl('');
                     setCustomCode('');
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer"
+                  className="w-full sm:flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer order-2 sm:order-1"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -367,7 +460,7 @@ export default function Dashboard() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full sm:flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer order-1 sm:order-2"
                 >
                   {isSubmitting ? 'Creating...' : 'Create Link'}
                 </button>
@@ -380,36 +473,31 @@ export default function Dashboard() {
       {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onClick={handleDeleteCancel}>
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-6 h-6 text-red-600" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">Delete Link?</h2>
-                <p className="text-gray-600 text-sm mb-3">
-                  Are you sure you want to delete this link? This action cannot be undone.
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">Delete Link?</h2>
+              <p className="text-gray-600 text-xs sm:text-sm mb-3">
+                Are you sure you want to delete this link? This action cannot be undone.
+              </p>
+              <div className="bg-gray-50 rounded-lg p-2.5 sm:p-3 border border-gray-200">
+                <p className="text-xs text-gray-500 mb-1">Short Code</p>
+                <p className="font-mono font-semibold text-gray-900 mb-2 text-sm">{deleteConfirm.code}</p>
+                <p className="text-xs text-gray-500 mb-1">Target URL</p>
+                <p className="text-xs sm:text-sm text-gray-700 break-all" title={deleteConfirm.url}>
+                  {deleteConfirm.url}
                 </p>
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-gray-500 mb-1">Short Code</p>
-                  <p className="font-mono font-medium text-gray-900 mb-2">{deleteConfirm.code}</p>
-                  <p className="text-xs text-gray-500 mb-1">Target URL</p>
-                  <p className="text-sm text-gray-700 truncate" title={deleteConfirm.url}>
-                    {deleteConfirm.url}
-                  </p>
-                </div>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={handleDeleteCancel}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer"
+                className="w-full sm:flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer order-2 sm:order-1"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium cursor-pointer"
+                className="w-full sm:flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium cursor-pointer order-1 sm:order-2"
               >
                 Delete Link
               </button>
