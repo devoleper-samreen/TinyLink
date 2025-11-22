@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2, Copy, Plus, Search, ExternalLink, Check, Activity, BarChart3 } from 'lucide-react';
+import { Trash2, Copy, Plus, Search, ExternalLink, Check, Activity, BarChart3, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -12,12 +12,17 @@ interface LinkData {
   lastClicked: string | null;
 }
 
+type SortField = 'code' | 'targetUrl' | 'clicks' | 'lastClicked';
+type SortOrder = 'asc' | 'desc';
+
 export default function Dashboard() {
   const [links, setLinks] = useState<LinkData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField>('code');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   // Form states
   const [targetUrl, setTargetUrl] = useState('');
@@ -131,11 +136,41 @@ export default function Dashboard() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
   const filteredLinks = links.filter(
     (link) =>
       link.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       link.targetUrl.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const sortedLinks = [...filteredLinks].sort((a, b) => {
+    let aValue: any = a[sortField];
+    let bValue: any = b[sortField];
+
+    // Handle null values for lastClicked
+    if (sortField === 'lastClicked') {
+      aValue = aValue ? new Date(aValue).getTime() : 0;
+      bValue = bValue ? new Date(bValue).getTime() : 0;
+    }
+
+    // Handle string comparison
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+    }
+
+    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -208,16 +243,68 @@ export default function Dashboard() {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Short URL
+                        <button
+                          onClick={() => handleSort('code')}
+                          className="flex items-center gap-1 hover:text-gray-700 transition-colors cursor-pointer"
+                          title={sortField === 'code'
+                            ? `Sorted ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'} (click to reverse)`
+                            : 'Click to sort by Short URL'}
+                        >
+                          Short URL
+                          {sortField === 'code' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 opacity-40" />
+                          )}
+                        </button>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Target URL
+                        <button
+                          onClick={() => handleSort('targetUrl')}
+                          className="flex items-center gap-1 hover:text-gray-700 transition-colors cursor-pointer"
+                          title={sortField === 'targetUrl'
+                            ? `Sorted ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'} (click to reverse)`
+                            : 'Click to sort by Target URL'}
+                        >
+                          Target URL
+                          {sortField === 'targetUrl' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 opacity-40" />
+                          )}
+                        </button>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Clicks
+                        <button
+                          onClick={() => handleSort('clicks')}
+                          className="flex items-center gap-1 hover:text-gray-700 transition-colors cursor-pointer"
+                          title={sortField === 'clicks'
+                            ? `Sorted ${sortOrder === 'asc' ? 'Low to High' : 'High to Low'} (click to reverse)`
+                            : 'Click to sort by Clicks'}
+                        >
+                          Clicks
+                          {sortField === 'clicks' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 opacity-40" />
+                          )}
+                        </button>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Last Clicked
+                        <button
+                          onClick={() => handleSort('lastClicked')}
+                          className="flex items-center gap-1 hover:text-gray-700 transition-colors cursor-pointer"
+                          title={sortField === 'lastClicked'
+                            ? `Sorted ${sortOrder === 'asc' ? 'Oldest First' : 'Newest First'} (click to reverse)`
+                            : 'Click to sort by Last Clicked'}
+                        >
+                          Last Clicked
+                          {sortField === 'lastClicked' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 opacity-40" />
+                          )}
+                        </button>
                       </th>
                       <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Stats
@@ -228,7 +315,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {filteredLinks.map((link) => (
+                    {sortedLinks.map((link) => (
                       <tr key={link.code} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
@@ -303,7 +390,7 @@ export default function Dashboard() {
 
             {/* Mobile Cards */}
             <div className="md:hidden space-y-3">
-              {filteredLinks.map((link) => (
+              {sortedLinks.map((link) => (
                 <div key={link.code} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
                   {/* Short URL Section */}
                   <div className="mb-3">
