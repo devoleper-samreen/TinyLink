@@ -7,6 +7,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Force dynamic rendering - this route cannot be statically generated
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /:code
  * Redirects to the target URL after incrementing click count
